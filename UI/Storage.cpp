@@ -5,7 +5,7 @@ Storage::Storage() = default;
 Storage* Storage::storage = nullptr;
 
 void Storage::addTexture(int side, int figure, const std::string& path) {
-    textures[side][figure].loadFromFile("sprites/" + path);
+    textures[side][figure].loadFromFile("../sprites/" + path);
 }
 
 void Storage::addFont(const std::string& path) {

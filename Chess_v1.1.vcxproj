@@ -132,23 +132,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Masks.cpp" />
-    <ClCompile Include="Move.cpp" />
-    <ClCompile Include="Pieces.cpp" />
-    <ClCompile Include="Pieces.hpp" />
-    <ClCompile Include="Position.cpp" />
-    <ClCompile Include="Storage.cpp" />
-    <ClCompile Include="UI.cpp" />
-    <ClCompile Include="ZobristHashing.cpp" />
+    <ClCompile Include="src\Masks.cpp" />
+    <ClCompile Include="src\Move.cpp" />
+    <ClCompile Include="src\Pieces.cpp" />
+    <ClCompile Include="src\Position.cpp" />
+    <ClCompile Include="src\ZobristHashing.cpp" />
+    <ClCompile Include="UI\Storage.cpp" />
+    <ClCompile Include="UI\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bitboard.hpp" />
-    <ClInclude Include="Masks.hpp" />
-    <ClInclude Include="Move.hpp" />
-    <ClInclude Include="Position.hpp" />
-    <ClInclude Include="Storage.hpp" />
-    <ClInclude Include="UI.hpp" />
-    <ClInclude Include="ZobristHashing.hpp" />
+    <ClInclude Include="src\Bitboard.hpp" />
+    <ClInclude Include="src\Masks.hpp" />
+    <ClInclude Include="src\Move.hpp" />
+    <ClInclude Include="src\Pieces.hpp" />
+    <ClInclude Include="src\Position.hpp" />
+    <ClInclude Include="src\ZobristHashing.hpp" />
+    <ClInclude Include="UI\Storage.hpp" />
+    <ClInclude Include="UI\UI.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

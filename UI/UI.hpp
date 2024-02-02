@@ -1,5 +1,5 @@
 #include "Storage.hpp"
-#include "Masks.hpp"
+#include "../src/Masks.hpp"
 #include <iostream>
 #include <math.h>
 
