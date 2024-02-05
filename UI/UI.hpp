@@ -1,7 +1,6 @@
 #include "Storage.hpp"
 #include "../src/Masks.hpp"
 #include <iostream>
-#include <math.h>
 
 enum STATUS { MoveWhite, MoveBlack, WonWhite, WonBlack, Draw };
 
@@ -9,22 +8,20 @@ class UI {
 
 	sf::RenderWindow window;
 	sf::Event event{};
-	Storage storage;
 	Position position;
 
-	float SIZE_CELL = 99;
+	float SizeCell = 99;
 
-	//Коррдинаты начала доски
-	float START_OF_BOARD_X = 0;
-	float START_OF_BOARD_Y = 0;
-
-	//Коррдинаты начала таблицы
-	static constexpr int START_OF_TABLE_X = 1000;
-	static constexpr int START_OF_TABLE_Y = 0;
+	sf::Vector2f PointStartBoard;
+	sf::Vector2i SelectedCell;
 
 	void update();
 	void drawCells();
 	void drawFigures();
+
+	sf::Vector2f getPositionCell(int x, int y);
+	int getArgsTexture(int x, int y);
+
 
 public:
 	UI();

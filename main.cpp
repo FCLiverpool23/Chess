@@ -1,7 +1,8 @@
 #include <iostream>
-#include "UI.hpp"
+#include "UI/UI.hpp"
 
 int main() {
+
 	UI ui;
 	ui.start();
 }

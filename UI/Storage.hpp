@@ -1,8 +1,8 @@
 #include <SFML/Graphics.hpp>
-#include <array>
+#include <unordered_map>
 
 class Storage {
-	std::array<std::array<sf::Texture, 6>, 2> textures;
+	std::unordered_map<int, sf::Texture> textures;
 	sf::Font font;
 
 	static Storage* storage;
@@ -10,9 +10,11 @@ class Storage {
 public:
 	Storage();
 
-	void addTexture(int side, int figure, const std::string& path);
+	void addTexture(int res, const std::string& path);
 	void addFont(const std::string& path);
 
-	sf::Texture getTexture(int side, int figure);
-	sf::Font getFont(const std::string& name);
+	sf::Texture *getTexture(int res);
+	sf::Font *getFont(const std::string& name);
+
+	static Storage* getPtr();
 };

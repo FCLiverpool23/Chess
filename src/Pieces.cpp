@@ -15,7 +15,7 @@ Pieces::Pieces(const std::string& fen) {
 		else if (std::isdigit(ch)) x += ch - '0';
 		else {
 			if (std::isupper(ch)) {
-				side = SIDE::BLACK;
+				side = SIDE::WHITE;
 				ch = std::tolower(ch);
 			}
 			else side = SIDE::BLACK;
