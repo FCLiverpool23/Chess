@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\LegalMove.cpp" />
     <ClCompile Include="src\Masks.cpp" />
     <ClCompile Include="src\Move.cpp" />
     <ClCompile Include="src\Pieces.cpp" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Bitboard.hpp" />
+    <ClInclude Include="src\LegalMove.hpp" />
     <ClInclude Include="src\Masks.hpp" />
     <ClInclude Include="src\Move.hpp" />
     <ClInclude Include="src\Pieces.hpp" />

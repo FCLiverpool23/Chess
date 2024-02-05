@@ -2,7 +2,7 @@
 
 Move::Move() = default;
 
-Move::Move(int InitialPosition, int FinalPosition, int TypeFigure, int SideFigure, int EatFigure, int NewTypeFigure, Type_Move TypeMove) {
+Move::Move(int InitialPosition, int FinalPosition, int TypeFigure, uint8_t SideFigure, int EatFigure, int NewTypeFigure, Type_Move TypeMove) {
 	this->InitialPosition = InitialPosition;
 	this->FinalPosition = FinalPosition;
 	this->TypeFigure = TypeFigure;

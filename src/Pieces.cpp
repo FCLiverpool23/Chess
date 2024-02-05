@@ -4,13 +4,13 @@ Pieces::Pieces() = default;
 
 Pieces::Pieces(const std::string& fen) {
 	int x = 0;
-	int y = 7;
+	int y = 0;
 
-	int side = 0;
+	uint8_t side = 0;
 
 	for (auto ch : fen) {
 		if (ch == '/') {
-			x = 0; y--;
+			x = 0; y++;
 		}
 		else if (std::isdigit(ch)) x += ch - '0';
 		else {
@@ -58,23 +58,23 @@ void Pieces::updateBitboard() {
 	InverseAllFigure = ~AllFigure;
 }
 
-int Pieces::inverseSide(int side) {
-	return ~side;
+int Pieces::inverseSide(uint8_t side) {
+	return !side;
 }
 
 std::array<std::array<Bitboard, 6>, 2> Pieces::getBitboards() {
 	return Bitboards;
 }
 
-Bitboard Pieces::getBitboard(int side, int figure) {
+Bitboard Pieces::getBitboard(uint8_t side, int figure) {
 	return Bitboards[side][figure];
 }
 
-Bitboard Pieces::getSideBitboard(int side) {
+Bitboard Pieces::getSideBitboard(uint8_t side) {
 	return SideBitboards[side];
 }
 
-Bitboard Pieces::getInverseSideBitboard(int side) {
+Bitboard Pieces::getInverseSideBitboard(uint8_t side) {
 	return InverseSideBitboards[side];
 }
 
@@ -86,6 +86,6 @@ Bitboard Pieces::getInverseAllFigure() {
 	return InverseAllFigure;
 }
 
-void Pieces::setBitboard(int side, int figure, Bitboard bb) {
+void Pieces::setBitboard(uint8_t side, int figure, Bitboard bb) {
 	Bitboards[side][figure] = bb;
 }

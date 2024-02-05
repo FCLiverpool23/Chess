@@ -17,14 +17,14 @@ public:
     Pieces();
     Pieces(const std::string& fen);
     void updateBitboard();
-    static int inverseSide(int side);
+    static int inverseSide(uint8_t side);
 
     std::array<std::array<Bitboard, 6>, 2> getBitboards() ;
-    Bitboard getBitboard(int side, int figure);
-    Bitboard getSideBitboard(int side);
-    Bitboard getInverseSideBitboard(int side);
+    Bitboard getBitboard(uint8_t side, int figure);
+    Bitboard getSideBitboard(uint8_t side);
+    Bitboard getInverseSideBitboard(uint8_t side);
     Bitboard getAllFigure();
     Bitboard getInverseAllFigure();
 
-    void setBitboard(int side, int figure, Bitboard bb);
+    void setBitboard(uint8_t side, int figure, Bitboard bb);
 };

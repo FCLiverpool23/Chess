@@ -10,7 +10,7 @@ ZobristHash::ZobristHash(Pieces pieces, bool wLCastling, bool wSCastling, bool b
     if (bLCastling) zobristBLCastling();
     if (bSCastling) zobristBSCastling();
 
-    int side;
+    uint8_t side;
     for (int pos = 0; pos < 64; pos++) {
         if (BOp::getBit(pieces.getSideBitboard(SIDE::WHITE), pos)) {
             side = SIDE::WHITE;
@@ -30,7 +30,7 @@ ZobristHash::ZobristHash(Pieces pieces, bool wLCastling, bool wSCastling, bool b
     }
 }
 
-void ZobristHash::zobrist(int side, int figure, int pos) {
+void ZobristHash::zobrist(uint8_t side, int figure, int pos) {
     this->value ^= ConstantsZobristHashing::Constants[side][figure][pos];
 }
 

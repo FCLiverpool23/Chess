@@ -89,14 +89,14 @@ void Position::move(Move move) {
 
 }
 
-void Position::addPiece(int pos, int figure, int side) {
+void Position::addPiece(int pos, int figure, uint8_t side) {
 	if (!BOp::getBit(pieces.getBitboard(side, figure), pos)) {
 		pieces.setBitboard(side, figure, BOp::addBit(pieces.getBitboard(side, figure), pos));
 		hash.zobrist(pos, figure, side);
 	}
 }
 
-void Position::removePiece(int pos, int figure, int side) {
+void Position::removePiece(int pos, int figure, uint8_t side) {
 	if (BOp::getBit(pieces.getBitboard(side, figure), pos)) {
 		pieces.setBitboard(side, figure, BOp::removeBit(pieces.getBitboard(side, figure), pos));
 		hash.zobrist(pos, figure, side);

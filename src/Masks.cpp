@@ -1,187 +1,104 @@
 #include "Masks.hpp"
 
-Masks::Masks() {
-	std::array<Bitboard, 64> kingMasks = calcKingMask();
-	std::array<Bitboard, 64> knightMasks = calcKnightMask();
-	std::array<Bitboard, 64> rookMasks = calcRookMask();
-	std::array<Bitboard, 64> bishopMasks = calcBishopMask();
-	std::array<Bitboard, 64> queenMasks = calcQueenMask();
+Bitboard Masks::getKingMask(Pieces pieces, int pos, uint8_t side) {
+	return KingMask::kingMasks[pos] & pieces.getInverseSideBitboard(side);
 }
 
-std::array<Bitboard, 64> Masks::calcKingMask() {
-	std::array<Bitboard, 64> tempMasks{};
-	int x1, x2, y1, y2;
-
-	for (int i = 0; i < 64; i++) {
-
-		x1 = (i % 8 == 0) ? 0 : -1;
-		x2 = (i % 8 == 7) ? 0 : 1;
-
-		y1 = (i < 8) ? 0 : -8;
-		y2 = (i > 55) ? 0 : 8;
-
-		for (int x = x1; x <= x2; x++) {
-			for (int y = y1; y <= y2; y += 8) {
-				if (x + y != 0) BOp::addBit(tempMasks[i], i + x + y);
-			}
-		}
-	}
-	return tempMasks;
+Bitboard Masks::getKnightMask(Pieces pieces, int pos, uint8_t side) {
+	return KnightMask::knightMasks[pos] & pieces.getInverseSideBitboard(side);
 }
 
-std::array<Bitboard, 64> Masks::calcKnightMask() {
-	std::array<Bitboard, 64> tempMasks{};
-	int dx, dy;
+Bitboard Masks::getRookMask(Pieces pieces, int pos, uint8_t side) {
 
-	for (int x0 = 0; x0 < 8; x0++) {
-		for (int y0 = 0; y0 < 8; y0++) {
+	Bitboard rN = getMask(pieces, SliderMask::rookMasks[pos][SliderMask::Direction::NORTH], side, true);
+	Bitboard rS = getMask(pieces, SliderMask::rookMasks[pos][SliderMask::Direction::SOUTH], side, false);
+	Bitboard rE = getMask(pieces, SliderMask::rookMasks[pos][SliderMask::Direction::EAST], side, true);
+	Bitboard rW = getMask(pieces, SliderMask::rookMasks[pos][SliderMask::Direction::WEST], side, false);
 
-			for (int x1 = 0; x1 < 8; x1++) {
-				for (int y1 = 0; y1 < 8; y1++) {
-
-					dx = (x1 < x0) ? (x0 - x1) : (x1 - x0);
-					dy = (y1 < y0) ? (y0 - y1) : (y1 - y0);
-
-					if ((dx == 2 && dy == 1) || (dx == 1 && dy == 2)) BOp::addBit(tempMasks[y0 * 8 + x0], y1 * 8 + x1);
-				}
-			}
-
-		}
-	}
-	return tempMasks;
+	return rN | rS | rE | rW;
 }
 
-Bitboard Masks::calcSliderMask(int pos, int direction) {
-	Bitboard tempMasks{};
+Bitboard Masks::getBishopMask(Pieces pieces, int pos, uint8_t side) {
 
-	int x = pos % 8;
-	int y = pos / 8;
+	Bitboard bNW = getMask(pieces, SliderMask::bishopMasks[pos][SliderMask::Direction::NORTH], side, true);
+	Bitboard bNE = getMask(pieces, SliderMask::bishopMasks[pos][SliderMask::Direction::SOUTH], side, true);
+	Bitboard bSW = getMask(pieces, SliderMask::bishopMasks[pos][SliderMask::Direction::EAST], side, false);
+	Bitboard bSE = getMask(pieces, SliderMask::bishopMasks[pos][SliderMask::Direction::WEST], side, false);
 
-	do {
-		switch (direction) {
-		case Direction::NORTH: y++; break;
-		case Direction::SOUTH: y--; break;
-		case Direction::EAST: x++; break;
-		case Direction::WEST: x--; break;
-		case Direction::NORTH_EAST: y++; x++; break;
-		case Direction::NORTH_WEST: y++; x--; break;
-		case Direction::SOUTH_EAST: y--; x++; break;
-		case Direction::SOUTH_WEST: y--; x--; break;
-		}
-
-		BOp::addBit(tempMasks, y * 8 + x);
-
-	} while (x > 7 || x < 0 || y > 7 || y < 0);
-
-	return tempMasks;
+	return bNW | bNE | bSW | bSE;
 }
 
-std::array<Bitboard, 64> Masks::calcRookMask() {
-	std::array<Bitboard, 64> tempMasks{};
-
-	for (int i = 0; i < 64; i++) {
-		for (int j = 0; j < 4; j++) {
-			tempMasks[i] ^= calcSliderMask(i, j);
-		}
-	}
-
-	return tempMasks;
+Bitboard Masks::getQueenMask(Pieces pieces, int pos, uint8_t side) {
+	return getBishopMask(pieces, pos, side) | getRookMask(pieces, pos, side);
 }
 
-std::array<Bitboard, 64> Masks::calcBishopMask() {
-	std::array<Bitboard, 64> tempMasks{};
-
-	for (int i = 0; i < 64; i++) {
-		for (int j = 4; j < 8; j++) {
-			tempMasks[i] = calcSliderMask(i, j);
-		}
-	}
-
-	return tempMasks;
-}
-
-std::array<Bitboard, 64> Masks::calcQueenMask() {
-	std::array<Bitboard, 64> tempMasks{};
-
-	for (int i = 0; i < 64; i++) {
-		for (int j = 0; j < 8; j++) {
-			tempMasks[i] ^= calcSliderMask(i, j);
-		}
-	}
-	return tempMasks;
-}
-
-Bitboard Masks::getKingMask(Pieces pieces, int pos, int side, bool onlyCaptures) {
-	if (onlyCaptures) return kingMasks[pos] & pieces.getSideBitboard(Pieces::inverseSide(side));
-	else return kingMasks[pos] & pieces.getInverseSideBitboard(side);
-}
-
-Bitboard Masks::getKnightMask(Pieces pieces, int pos, int side, bool onlyCaptures) {
-	if (onlyCaptures) return knightMasks[pos] & pieces.getSideBitboard(Pieces::inverseSide(side));
-	else return knightMasks[pos] & pieces.getInverseSideBitboard(side);
-}
-
-Bitboard Masks::getRookMask(Pieces pieces, int pos, int side, bool onlyCaptures) {
-	if (onlyCaptures) return rookMasks[pos] & pieces.getSideBitboard(Pieces::inverseSide(side));
-	else return rookMasks[pos] & pieces.getInverseSideBitboard(side);
-}
-
-Bitboard Masks::getBishopMask(Pieces pieces, int pos, int side, bool onlyCaptures) {
-	if (onlyCaptures) return bishopMasks[pos] & pieces.getSideBitboard(Pieces::inverseSide(side));
-	else return bishopMasks[pos] & pieces.getInverseSideBitboard(side);
-}
-
-Bitboard Masks::getQueenMask(Pieces pieces, int pos, int side, bool onlyCaptures) {
-	if (onlyCaptures) return queenMasks[pos] & pieces.getSideBitboard(Pieces::inverseSide(side));
-	else return queenMasks[pos] & pieces.getInverseSideBitboard(side);
-}
-
-Bitboard Masks::getPawnShortMask(Pieces pieces, int side) {
-	if (side == SIDE::WHITE) return (pieces.getBitboard(side, FIGURE::PAWN) << 8) & pieces.getInverseAllFigure();
-	else return (pieces.getBitboard(side, FIGURE::PAWN) >> 8) & pieces.getInverseAllFigure();
-}
-
-Bitboard Masks::getPawnLongMask(Pieces pieces, int side) {
-	Bitboard shortMask = getPawnShortMask(pieces, side);
-
-	if (side == SIDE::WHITE) return ((shortMask & BRows::ROWS[2]) << 8) & pieces.getInverseAllFigure();
-	else return ((shortMask & BRows::ROWS[5]) >> 8) & pieces.getInverseAllFigure();
-}
-
-Bitboard Masks::getPawnLeftAttackMask(Pieces pieces, int side, bool onlyCaptures) {
+Bitboard Masks::getPawnLeftAttackMask(Pieces pieces, uint8_t side) {
 	if (side == SIDE::WHITE) {
 		Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) << 7) & BColumns::INV_COLUMNS[7];
-		if (!onlyCaptures) mask &= pieces.getSideBitboard(Pieces::inverseSide(side));
 		return mask;
 	}
 	Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) >> 9) & BColumns::INV_COLUMNS[7];
-	if (!onlyCaptures) mask &= pieces.getSideBitboard(Pieces::inverseSide(side));
 	return mask;
 }
 
-Bitboard Masks::getPawnRightAttackMask(Pieces pieces, int side, bool onlyCaptures) {
+Bitboard Masks::getPawnRightAttackMask(Pieces pieces, uint8_t side) {
 	if (side == SIDE::WHITE) {
 		Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) << 9) & BColumns::INV_COLUMNS[0];
-		if (!onlyCaptures) mask &= pieces.getSideBitboard(Pieces::inverseSide(side));
 		return mask;
 	}
 	Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) >> 7) & BColumns::INV_COLUMNS[0];
-	if (!onlyCaptures) mask &= pieces.getSideBitboard(Pieces::inverseSide(side));
 	return mask;
 }
 
-bool Masks::figureIsAttacked(Pieces pieces, int pos, int side) {
-	if (BOp::getBit(getPawnLeftAttackMask(pieces, side, true) | getPawnRightAttackMask(pieces, side, true), pos)) return true;
+Bitboard Masks::getPawnMask(Pieces pieces, uint8_t side, int pos) {
+	Bitboard mask = 0;
+	mask = BOp::addBit(mask, pos);
+	Bitboard result = 0;
 
-	if (getKingMask(pieces, pos, side, true) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::KING)) return true;
+	if (side == SIDE::WHITE) {
+		if (!BOp::getBit(pieces.getAllFigure(), pos - 8)) result ^= mask >> 8;
+		if (!BOp::getBit(pieces.getAllFigure(), pos - 16)) result ^= (mask & BRows::ROWS[6]) >> 16;
+		if (BOp::getBit(pieces.getSideBitboard(Pieces::inverseSide(side)), pos - 7)) result ^= mask >> 7;
+		if (BOp::getBit(pieces.getSideBitboard(Pieces::inverseSide(side)), pos - 9)) result ^= mask >> 9;
+	}
+	else {
+		if (!BOp::getBit(pieces.getAllFigure(), pos + 8)) result ^= mask << 8;
+		if (!BOp::getBit(pieces.getAllFigure(), pos + 16)) result ^= (mask & BRows::ROWS[1]) << 16;
+		if (BOp::getBit(pieces.getSideBitboard(Pieces::inverseSide(side)), pos + 7)) result ^= mask << 7;
+		if (BOp::getBit(pieces.getSideBitboard(Pieces::inverseSide(side)), pos + 9)) result ^= mask << 9;
+	}
 
-	if (getKnightMask(pieces, pos, side, true) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::KNIGHT)) return true;
+	return result;
+}
 
-	if (getRookMask(pieces, pos, side, true) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::ROOK)) return true;
+bool Masks::figureIsAttacked(Pieces pieces, int pos, uint8_t side) {
+	if (BOp::getBit(getPawnLeftAttackMask(pieces, side) | getPawnRightAttackMask(pieces, side), pos)) return true;
 
-	if (getBishopMask(pieces, pos, side, true) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::BISHOP)) return true;
+	if (getKingMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::KING)) return true;
 
-	if (getQueenMask(pieces, pos, side, true) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::QUEEN)) return true;
+	if (getKnightMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::KNIGHT)) return true;
+
+	if (getRookMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::ROOK)) return true;
+
+	if (getBishopMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::BISHOP)) return true;
+
+	if (getQueenMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::QUEEN)) return true;
 
 	return false;
+}
+
+Bitboard Masks::getMask(Pieces pieces, Bitboard bitboard, uint8_t side, bool root) {
+	Bitboard mask = 0;
+	Bitboard inverseSideFigure = pieces.getSideBitboard(Pieces::inverseSide(side));
+	Bitboard sideFigure = pieces.getSideBitboard(side);
+	while (bitboard) {
+		int pos = 0;
+		if (root) pos = BOp::bsr(bitboard);
+		else pos = BOp::bsf(bitboard);
+		if (BOp::getBit(sideFigure, pos)) break;
+		mask = BOp::addBit(mask, pos);
+		if (BOp::getBit(inverseSideFigure, pos)) break;
+		bitboard = BOp::removeBit(bitboard, pos);
+	}
+	return mask;
 }

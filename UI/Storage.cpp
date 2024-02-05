@@ -12,11 +12,19 @@ void Storage::addFont(const std::string& path) {
     font.loadFromFile(path);
 }
 
+void Storage::addCross(const std::string& path) {
+    redCross.loadFromFile(path);
+}
+
 sf::Texture *Storage::getTexture(int res) {
     return &textures[res];
 }
-sf::Font *Storage::getFont(const std::string& name) {
+sf::Font *Storage::getFont() {
     return &font;
+}
+
+sf::Texture* Storage::getCross() {
+    return &redCross;
 }
 
 Storage* Storage::getPtr() {

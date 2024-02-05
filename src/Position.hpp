@@ -10,8 +10,8 @@ class Position {
 	bool wLCastling, wSCastling, bLCastling, bSCastling;
 	float countMove, countMoveDraw;
 
-	void addPiece(int pos, int figure, int side);
-	void removePiece(int pos, int figure, int side);
+	void addPiece(int pos, int figure, uint8_t side);
+	void removePiece(int pos, int figure, uint8_t side);
 
 	void changeEnPassant(int enPassant);
 

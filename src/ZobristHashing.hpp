@@ -20,7 +20,7 @@ namespace ConstantsZobristHashing {
 
 		uint64_t number = GPRN::seed;
 
-		for (int side = 0; side < 2; side++) {
+		for (uint8_t side = 0; side < 2; side++) {
 			for (int figure = 0; figure < 6; figure++) {
 				for (int pos = 0; pos < 64; pos++) {
 					number = GPRN::random(number);
@@ -48,7 +48,7 @@ public:
 	ZobristHash(Pieces pieces, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling);
 	uint64_t getValue();
 
-	void zobrist(int side, int figure, int square);
+	void zobrist(uint8_t side, int figure, int square);
 	void zobristSide();
 	void zobristWLCastling();
 	void zobristWSCastling();

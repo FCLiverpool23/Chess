@@ -1,3 +1,6 @@
+#include "cstdint"
+#pragma once
+
 enum Type_Move { DefaultMove = 0, LongMovePawn, EnPassantCapture, ShortCastling, LongCastling, Transformation_Pawn };
 
 class Move {
@@ -5,7 +8,7 @@ class Move {
 	int FinalPosition;
 
 	int TypeFigure;
-	int SideFigure;
+	uint8_t SideFigure;
 
 	int EatFigure;
 
@@ -15,7 +18,7 @@ class Move {
 
 public:
 	Move();
-	Move(int InitialPosition, int FinalPosition, int TypeFigure, int SideFigure, int EatFigure, int NewTypeFigure, Type_Move TypeMove = Type_Move::DefaultMove);
+	Move(int InitialPosition, int FinalPosition, int TypeFigure, uint8_t SideFigure, int EatFigure, int NewTypeFigure = Move::NONE, Type_Move TypeMove = Type_Move::DefaultMove);
 
 	int GetInitialPosition();
 	int GetFinalPosition();
