@@ -10,6 +10,8 @@ class Position {
 	bool wLCastling, wSCastling, bLCastling, bSCastling;
 	float countMove, countMoveDraw;
 
+	uint8_t yourColor;
+
 	void addPiece(int pos, int figure, uint8_t side);
 	void removePiece(int pos, int figure, uint8_t side);
 
@@ -17,7 +19,7 @@ class Position {
 
 public:
 	Position();
-	Position(const std::string& fen, int enPassant, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling, float countMove);
+	Position(uint8_t yourColor, int enPassant, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling, float countMove);
 
 	void move(Move move);
 
@@ -29,5 +31,14 @@ public:
 	void updateCountMove();
 	void updateCountMoveDraw(bool break_event);
 
-	Pieces getPieces() { return pieces; }
+	bool getWLCastling() { return wLCastling; }
+	bool getWSCastling() { return wSCastling; }
+	bool getBLCastling() { return bLCastling; }
+	bool getBSCastling() { return bSCastling; }
+
+	float getCountMove() { return countMove; }
+	
+	uint8_t getYourColor() { return yourColor; }
+
+	Pieces getPieces() { return this->pieces; }
 };

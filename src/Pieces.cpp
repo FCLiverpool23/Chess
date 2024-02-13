@@ -87,5 +87,13 @@ Bitboard Pieces::getInverseAllFigure() {
 }
 
 void Pieces::setBitboard(uint8_t side, int figure, Bitboard bb) {
-	Bitboards[side][figure] = bb;
+	this->Bitboards[side][figure] = bb;
+}
+
+void Pieces::removeInBitboards(uint8_t side, int figure, int pos) {
+	this->Bitboards[side][figure] = BOp::removeBit(this->Bitboards[side][figure], pos);
+}
+
+void Pieces::addInBitboards(uint8_t side, int figure, int pos) {
+	this->Bitboards[side][figure] = BOp::addBit(this->Bitboards[side][figure], pos);
 }

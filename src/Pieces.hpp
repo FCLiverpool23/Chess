@@ -27,4 +27,6 @@ public:
     Bitboard getInverseAllFigure();
 
     void setBitboard(uint8_t side, int figure, Bitboard bb);
+    void removeInBitboards(uint8_t side, int figure, int pos);
+    void addInBitboards(uint8_t side, int figure, int pos);
 };

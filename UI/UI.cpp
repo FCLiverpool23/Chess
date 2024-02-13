@@ -20,7 +20,10 @@ UI::UI() {
 
 	Storage::getPtr()->addFont("2409-font.ttf");
 	Storage::getPtr()->addCross("sprites/RedCross.png");
-	this->position = { "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", Move::NONE, true, true, true, true, 1 };
+
+	
+
+	this->position = { SIDE::WHITE, Move::NONE, true, true, true, true, 1 };
 
 	this->window.create(sf::VideoMode(1300, 1000), "Chess");
 }
@@ -41,15 +44,16 @@ void UI::start() {
 						int result = getArgsTexture(x, y);
 
 						if (mouse.x > (int)getPositionCell(x, y).x && mouse.y > (int)getPositionCell(x, y).y && mouse.x < (int)(getPositionCell(x, y).x + SizeCell)
-							&& mouse.y < (int)(getPositionCell(x, y).y + SizeCell) && (result != Move::NONE)) cell = sf::Vector2i(x, y);
+							&& mouse.y < (int)(getPositionCell(x, y).y + SizeCell) && (result != Move::NONE || SelectedCell != sf::Vector2i(INT_MAX, INT_MAX))) cell = sf::Vector2i(x, y);
 					}
 				}
+
 
 				if (SelectedCell == sf::Vector2i(INT_MAX, INT_MAX)) SelectedCell = cell;
 				else {
 
 					for (int i = 0; i < actualMoves.size(); i++) {
-						if (actualMoves[i].GetFinalPosition() == mouse.y * 8 + mouse.x) 
+						if (actualMoves[i].GetFinalPosition() == cell.y * 8 + cell.x) position.move(actualMoves[i]);
 					}
 
 					SelectedCell = sf::Vector2i(INT_MAX, INT_MAX);
@@ -59,7 +63,7 @@ void UI::start() {
 			this->update();
 		}
 	}
-}
+} 
 
 void UI::update() {
 	this->window.clear();
@@ -174,8 +178,4 @@ int UI::getArgsTexture(int x, int y) {
 	if (BOp::getBit(bs[SIDE::BLACK][FIGURE::PAWN], pos)) return (SIDE::BLACK * 6 + FIGURE::PAWN);
 
 	return Move::NONE;
-}
-
-void UI::doMove(int pos) {
-	
 }

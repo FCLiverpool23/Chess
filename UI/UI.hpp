@@ -24,7 +24,6 @@ class UI {
 
 	sf::Vector2f getPositionCell(int x, int y);
 	int getArgsTexture(int x, int y);
-	void doMove(int pos);
 
 public:
 	UI();
