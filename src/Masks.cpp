@@ -32,8 +32,8 @@ Bitboard Masks::getQueenMask(Pieces pieces, int pos, uint8_t side) {
 	return getBishopMask(pieces, pos, side) | getRookMask(pieces, pos, side);
 }
 
-Bitboard Masks::getPawnLeftAttackMask(Pieces pieces, uint8_t side) {
-	if (side == SIDE::WHITE) {
+Bitboard Masks::getPawnLeftAttackMask(Pieces pieces, uint8_t side, uint8_t yourSide) {
+	if (side == yourSide) {
 		Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) << 7) & BColumns::INV_COLUMNS[7];
 		return mask;
 	}
@@ -41,8 +41,8 @@ Bitboard Masks::getPawnLeftAttackMask(Pieces pieces, uint8_t side) {
 	return mask;
 }
 
-Bitboard Masks::getPawnRightAttackMask(Pieces pieces, uint8_t side) {
-	if (side == SIDE::WHITE) {
+Bitboard Masks::getPawnRightAttackMask(Pieces pieces, uint8_t side, uint8_t yourSide) {
+	if (side == yourSide) {
 		Bitboard mask = (pieces.getBitboard(SIDE::WHITE, FIGURE::PAWN) << 9) & BColumns::INV_COLUMNS[0];
 		return mask;
 	}
@@ -50,12 +50,12 @@ Bitboard Masks::getPawnRightAttackMask(Pieces pieces, uint8_t side) {
 	return mask;
 }
 
-Bitboard Masks::getPawnMask(Pieces pieces, uint8_t side, int pos) {
+Bitboard Masks::getPawnMask(Pieces pieces, uint8_t side, int pos, uint8_t yourSide) {
 	Bitboard mask = 0;
 	mask = BOp::addBit(mask, pos);
 	Bitboard result = 0;
 
-	if (side == SIDE::WHITE) {
+	if (side == yourSide) {
 		if (!BOp::getBit(pieces.getAllFigure(), pos - 8)) result ^= mask >> 8;
 		if (!BOp::getBit(pieces.getAllFigure(), pos - 16)) result ^= (mask & BRows::ROWS[6]) >> 16;
 		if (BOp::getBit(pieces.getSideBitboard(Pieces::inverseSide(side)), pos - 7)) result ^= mask >> 7;
@@ -71,8 +71,8 @@ Bitboard Masks::getPawnMask(Pieces pieces, uint8_t side, int pos) {
 	return result;
 }
 
-bool Masks::figureIsAttacked(Pieces pieces, int pos, uint8_t side) {
-	if (BOp::getBit(getPawnLeftAttackMask(pieces, side) | getPawnRightAttackMask(pieces, side), pos)) return true;
+bool Masks::figureIsAttacked(Pieces pieces, int pos, uint8_t side, uint8_t yourSide) {
+	if (BOp::getBit(getPawnLeftAttackMask(pieces, Pieces::inverseSide(side), yourSide) | getPawnRightAttackMask(pieces, Pieces::inverseSide(side), yourSide), pos)) return true;
 
 	if (getKingMask(pieces, pos, side) & pieces.getBitboard(Pieces::inverseSide(side), FIGURE::KING)) return true;
 

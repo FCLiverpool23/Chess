@@ -2,6 +2,7 @@
 #include "../src/LegalMove.hpp"
 #include <iostream>
 
+
 enum STATUS { MoveWhite, MoveBlack, WonWhite, WonBlack, Draw };
 
 class UI {
@@ -13,6 +14,9 @@ class UI {
 	float SizeCell = 99;
 
 	sf::Vector2f PointStartBoard;
+	sf::Vector2f PointStartFigure;
+	sf::Vector2f PointStartTable;
+
 	sf::Vector2i SelectedCell;
 
 	std::vector<Move> actualMoves;
@@ -21,10 +25,14 @@ class UI {
 	void drawCells();
 	void drawFigures();
 	void drawAttackedCell();
+	void drawTableMove();
+
+	void drawTable(int number, std::string textCell, bool flag);
 
 	sf::Vector2f getPositionCell(int x, int y);
 	int getArgsTexture(int x, int y);
-	void doMove(int pos);
+
+	std::string positionToString(int pos);
 
 public:
 	UI();

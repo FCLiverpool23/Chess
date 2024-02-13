@@ -16,13 +16,16 @@ UI::UI() {
 	Storage::getPtr()->addTexture(SIDE::BLACK * 6 + FIGURE::PAWN, "bP.png");
 
 	this->PointStartBoard = sf::Vector2f(100, 100);
+	this->PointStartFigure = sf::Vector2f(PointStartBoard.x * 9, PointStartBoard.y);
+	this->PointStartTable = sf::Vector2f(PointStartBoard.x * 15, PointStartBoard.y);
 	this->SelectedCell = sf::Vector2i(INT_MAX, INT_MAX);
 
 	Storage::getPtr()->addFont("2409-font.ttf");
 	Storage::getPtr()->addCross("sprites/RedCross.png");
-	this->position = { "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR", Move::NONE, true, true, true, true, 1 };
 
-	this->window.create(sf::VideoMode(1300, 1000), "Chess");
+	this->position = { SIDE::WHITE, Move::NONE, true, true, true, true, 1 };
+
+	this->window.create(sf::VideoMode(1800, 1000), "Chess");
 }
 
 void UI::start() {
@@ -41,15 +44,20 @@ void UI::start() {
 						int result = getArgsTexture(x, y);
 
 						if (mouse.x > (int)getPositionCell(x, y).x && mouse.y > (int)getPositionCell(x, y).y && mouse.x < (int)(getPositionCell(x, y).x + SizeCell)
-							&& mouse.y < (int)(getPositionCell(x, y).y + SizeCell) && (result != Move::NONE)) cell = sf::Vector2i(x, y);
+							&& mouse.y < (int)(getPositionCell(x, y).y + SizeCell) && (result != Move::NONE || SelectedCell != sf::Vector2i(INT_MAX, INT_MAX))) cell = sf::Vector2i(x, y);
 					}
 				}
 
-				if (SelectedCell == sf::Vector2i(INT_MAX, INT_MAX)) SelectedCell = cell;
+				
+				if (SelectedCell == sf::Vector2i(INT_MAX, INT_MAX)) {
+					if (fabs((int)position.getCountMove() - position.getCountMove()) > 1e-7f && BOp::getBit(position.getPieces().getSideBitboard(SIDE::WHITE), cell.y * 8 + cell.x)) continue;
+					if (fabs((int)position.getCountMove() - position.getCountMove()) <= 1e-7f && BOp::getBit(position.getPieces().getSideBitboard(SIDE::BLACK), cell.y * 8 + cell.x)) continue;
+					SelectedCell = cell;
+				}
 				else {
 
 					for (int i = 0; i < actualMoves.size(); i++) {
-						if (actualMoves[i].GetFinalPosition() == mouse.y * 8 + mouse.x) 
+						if (actualMoves[i].GetFinalPosition() == cell.y * 8 + cell.x) position.move(actualMoves[i]);
 					}
 
 					SelectedCell = sf::Vector2i(INT_MAX, INT_MAX);
@@ -59,18 +67,30 @@ void UI::start() {
 			this->update();
 		}
 	}
-}
+} 
 
 void UI::update() {
 	this->window.clear();
 	drawCells();
 	drawFigures();
 	drawAttackedCell();
+	drawTableMove();
 	this->window.display();
 }
 
 void UI::drawCells() {
+	sf::Text number;
+	number.setFont(*Storage::getPtr()->getFont());
+	number.setCharacterSize(40);
+	for (char ch = 'A'; ch < 'I'; ch++) {
+		number.setString(ch);
+		number.setPosition(sf::Vector2f((ch - '@') * SizeCell + SizeCell / 2 - number.getLocalBounds().width / 2, 0.5 * SizeCell));
+		window.draw(number);
+	}
 	for (int x = 0; x < 8; x++) {
+		number.setString(std::to_string(x + 1));
+		number.setPosition(sf::Vector2f(8 * SizeCell/10, (x + 1) * SizeCell + SizeCell / 2 - number.getLocalBounds().height / 2));
+		window.draw(number);
 		for (int y = 0; y < 8; y++) {
 			sf::RectangleShape cell(sf::Vector2f(SizeCell, SizeCell));
 			cell.setPosition(getPositionCell(x, y));
@@ -86,6 +106,21 @@ void UI::drawCells() {
 			window.draw(cell);
 		}
 	}
+
+	for (int i = 0; i < 2; i++) {
+		for (int x = 0; x < 5; x++) {
+			for (int y = 0; y < 3; y++) {
+				sf::RectangleShape cell(sf::Vector2f(SizeCell, SizeCell));
+				cell.setPosition(20 + PointStartFigure.x + x * SizeCell, PointStartFigure.y + y * SizeCell);
+				cell.setFillColor(sf::Color(125, 77, 93));
+				cell.setOutlineThickness(2);
+				cell.setOutlineColor(sf::Color(255, 255, 255));
+				window.draw(cell);
+			}
+		}
+		PointStartFigure.y = PointStartBoard.y * 6;
+	}
+	PointStartFigure.y = PointStartBoard.y;
 }
 
 void UI::drawFigures() {
@@ -103,6 +138,35 @@ void UI::drawFigures() {
 			this->window.draw(sprite);
 		}
 	}
+
+	uint8_t side = Pieces::inverseSide(position.getYourColor());
+	int x = 0;
+	int y = 0;
+
+	for (int l = 0; l < 2; l++) {
+		for (int i = 0; i < 6; i++) {
+			sf::Sprite sprite;
+			int count = BOp::count(position.getPieces().getBitboard(side, i));
+			int countMax = 0;
+			if (i == FIGURE::PAWN) countMax = 8;
+			else if (i == FIGURE::KNIGHT) countMax = 2;
+			else if (i == FIGURE::ROOK) countMax = 2;
+			else if (i == FIGURE::BISHOP) countMax = 2;
+			else if (i == FIGURE::QUEEN) countMax = 1;
+			sprite.setTexture(*Storage::getPtr()->getTexture(side * 6 + i));
+			sprite.setScale(PointStartBoard.x / sprite.getLocalBounds().width, PointStartBoard.y / sprite.getLocalBounds().height);
+			for (int j = count; j < countMax; j++) {
+				sprite.setPosition(20 + PointStartFigure.x + x * SizeCell, PointStartFigure.y + y * SizeCell);
+				this->window.draw(sprite);
+				if (x == 4) { y++; x = 0; }
+				else x++;
+			}
+		}
+		side = position.getYourColor();
+		PointStartFigure.y = PointStartBoard.y * 6;
+		x = 0; y = 0;
+	}
+	PointStartFigure.y = PointStartBoard.y;
 }
 
 void UI::drawAttackedCell() {
@@ -119,7 +183,7 @@ void UI::drawAttackedCell() {
 	uint8_t side = result / 6;
 	int figure = result % 6;
 
-	std::vector<Move> moves = LegalMove::generate(position, side, figure, SelectedCell.y * 8 + SelectedCell.x);
+	std::vector<Move> moves = LegalMove::generate(position, side, figure, SelectedCell.y * 8 + SelectedCell.x, position.getYourColor());
 
 	actualMoves = moves;
 
@@ -139,6 +203,56 @@ void UI::drawAttackedCell() {
 			this->window.draw(shape);
 		}
 	}
+}
+
+void UI::drawTableMove() {
+	drawTable(0, "Белые", true);
+	drawTable(0, "Черные", false);
+	for (int i = 0; i < position.getListAllMove().size(); i++) {
+		std::string text;
+
+		if (position.getListAllMove()[i].GetTypeMove() == Type_Move::LongCastling) text = "0-0-0";
+		else if (position.getListAllMove()[i].GetTypeMove() == Type_Move::ShortCastling) text = "0-0";
+		else {
+			text = positionToString(position.getListAllMove()[i].GetInitialPosition());
+			if (position.getListAllMove()[i].GetEatFigure() == Move::NONE) text += " - ";
+			else text += " : ";
+			text += positionToString(position.getListAllMove()[i].GetFinalPosition());
+		}
+
+		drawTable(std::floor(i / 2) + 1, text, i % 2 == 0);
+		
+	}
+}
+
+void UI::drawTable(int number, std::string textCell, bool flag) {
+	sf::Text text;
+	text.setFont(*Storage::getPtr()->getFont());
+	text.setCharacterSize(20);
+	text.setFillColor(sf::Color(0, 0, 0));
+
+	sf::RectangleShape cell(sf::Vector2f(SizeCell, SizeCell / 2));
+	cell.setFillColor(sf::Color(255, 255, 255));
+	cell.setOutlineThickness(2);
+	cell.setOutlineColor(sf::Color(0, 0, 0));
+
+	float x = (flag) ? PointStartTable.x : (PointStartTable.x + cell.getSize().x);
+	
+	cell.setPosition(x, PointStartTable.y + cell.getSize().y * number);
+	text.setString(textCell);
+	text.setPosition(x + cell.getSize().x / 2 - text.getLocalBounds().width, PointStartTable.y + cell.getSize().y * number + cell.getSize().y / 2 - text.getLocalBounds().height);
+	this->window.draw(cell);
+	this->window.draw(text);
+}
+
+std::string UI::positionToString(int pos) {
+	int y = pos / 8;
+	int x = pos % 8;
+
+	std::string text;
+	text = 'A' + x;
+	text += std::to_string(y+1);
+	return text;
 }
 
 sf::Vector2f UI::getPositionCell(int x, int y) {
@@ -174,8 +288,4 @@ int UI::getArgsTexture(int x, int y) {
 	if (BOp::getBit(bs[SIDE::BLACK][FIGURE::PAWN], pos)) return (SIDE::BLACK * 6 + FIGURE::PAWN);
 
 	return Move::NONE;
-}
-
-void UI::doMove(int pos) {
-	
 }

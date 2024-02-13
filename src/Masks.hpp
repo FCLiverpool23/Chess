@@ -99,6 +99,86 @@ namespace SliderMask {
 	static constexpr std::array<std::array<Bitboard, 4>, 64> bishopMasks = calcMasks(4);
 }
 
+namespace EntrancePawn {
+	static consteval std::array<Bitboard, 64> calcYourPawnEntrance() {
+		std::array<Bitboard, 64> masks{};
+
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+
+				for (int y1 = y - 1; y1 >= 0; y1--) {
+					if (x != 0) BOp::addBit(masks[y * 8 + x], y1 * 8 + x - 1);
+					if (x != 7) BOp::addBit(masks[y * 8 + x], y1 * 8 + x + 1);
+					BOp::addBit(masks[y * 8 + x], y1 * 8 + x);
+				}
+			}
+		}
+		return masks;
+	}
+
+	static consteval std::array<Bitboard, 64> calcOpponentPawnEntrance() {
+		std::array<Bitboard, 64> masks{};
+
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+
+				for (int y1 = y + 1; y1 < 8; y1++) {
+					if (x != 0) BOp::addBit(masks[y * 8 + x], y1 * 8 + x - 1);
+					if (x != 7) BOp::addBit(masks[y * 8 + x], y1 * 8 + x + 1);
+					BOp::addBit(masks[y * 8 + x], y1 * 8 + x);
+				}
+			}
+		}
+		return masks;
+	}
+	
+	static constexpr std::array<Bitboard, 64> yourPawnEntrance = calcYourPawnEntrance();
+	static constexpr std::array<Bitboard, 64> opponentPawnEntrance = calcOpponentPawnEntrance();
+}
+
+namespace PawnShield {
+	static consteval std::array<Bitboard, 64> calcYourPawnShield() {
+		std::array<Bitboard, 64> masks{};
+
+		for (int x = 0; x < 8; x++) {
+			for (int y = 1; y < 8; y++) {
+				if (x != 0) BOp::addBit(masks[y * 8 + x], (y - 1) * 8 + x - 1);
+				if (x != 7) BOp::addBit(masks[y * 8 + x], (y - 1) * 8 + x + 1);
+				BOp::addBit(masks[y * 8 + x], (y - 1) * 8 + x);
+				
+				if (y != 1) {
+					if (x != 0) BOp::addBit(masks[y * 8 + x], (y - 2) * 8 + x - 1);
+					if (x != 7) BOp::addBit(masks[y * 8 + x], (y - 2) * 8 + x + 1);
+					BOp::addBit(masks[y * 8 + x], (y - 2) * 8 + x);
+				}
+			}
+		}
+		return masks;
+	}
+
+	static consteval std::array<Bitboard, 64> calcOpponentPawnShield() {
+		std::array<Bitboard, 64> masks{};
+
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 7; y++) {
+				if (x != 0) BOp::addBit(masks[y * 8 + x], (y + 1) * 8 + x - 1);
+				if (x != 7) BOp::addBit(masks[y * 8 + x], (y + 1) * 8 + x + 1);
+				BOp::addBit(masks[y * 8 + x], (y + 1) * 8 + x);
+
+				if (y != 6) {
+					if (x != 0) BOp::addBit(masks[y * 8 + x], (y + 2) * 8 + x - 1);
+					if (x != 7) BOp::addBit(masks[y * 8 + x], (y + 2) * 8 + x + 1);
+					BOp::addBit(masks[y * 8 + x], (y + 2) * 8 + x);
+				}
+			}
+		}
+		return masks;
+	}
+
+	static constexpr std::array<Bitboard, 64> yourPawnSheild = calcYourPawnShield();
+	static constexpr std::array<Bitboard, 64> opponentPawnSheild = calcOpponentPawnShield();
+}
+
 class Masks {
 	static Bitboard getMask(Pieces pieces, Bitboard bitboard, uint8_t side, bool root);
 public:
@@ -108,10 +188,10 @@ public:
 	static Bitboard getBishopMask(Pieces pieces, int pos, uint8_t side);
 	static Bitboard getQueenMask(Pieces pieces, int pos, uint8_t side);
 
-	static Bitboard getPawnLeftAttackMask(Pieces pieces, uint8_t side);
-	static Bitboard getPawnRightAttackMask(Pieces pieces, uint8_t side);
+	static Bitboard getPawnLeftAttackMask(Pieces pieces, uint8_t side, uint8_t yourSide);
+	static Bitboard getPawnRightAttackMask(Pieces pieces, uint8_t side, uint8_t yourSide);
 
-	static Bitboard getPawnMask(Pieces pieces, uint8_t side, int pos);
+	static Bitboard getPawnMask(Pieces pieces, uint8_t side, int pos, uint8_t yourSide);
 
-	static bool figureIsAttacked(Pieces pieces, int pos, uint8_t side);
+	static bool figureIsAttacked(Pieces pieces, int pos, uint8_t side, uint8_t yourSide);
 };

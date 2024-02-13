@@ -2,8 +2,11 @@
 
 Position::Position() = default;
 
-Position::Position(const std::string& fen, int enPassant, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling, float countMove) {
-	this->pieces = { fen };
+Position::Position(uint8_t yourColor, int enPassant, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling, float countMove) {
+	
+	if(yourColor == SIDE::WHITE) this->pieces = { "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR" };
+	else this->pieces = { "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr" };
+	this->yourColor = yourColor;
 	this->hash = { pieces, wLCastling, wSCastling, bLCastling, bSCastling };
 	this->repetition.addHash(hash);
 
@@ -23,7 +26,7 @@ void Position::move(Move move) {
 
 	if (move.GetEatFigure() != Move::NONE) removePiece(move.GetFinalPosition(), move.GetEatFigure(), Pieces::inverseSide(move.GetSideFigure()));
 
-	switch (move.GetTypeFigure()){
+	switch (move.GetTypeMove()){
 
 	case Type_Move::DefaultMove: break;
 
@@ -37,13 +40,26 @@ void Position::move(Move move) {
 		break;
 
 	case Type_Move::ShortCastling:
-		removePiece(BOp::bsr(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
-		addPiece(move.GetFinalPosition() - 1, FIGURE::ROOK, move.GetSideFigure());
+		if (yourColor == SIDE::WHITE) {
+			removePiece(BOp::bsr(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
+			addPiece(move.GetFinalPosition() - 1, FIGURE::ROOK, move.GetSideFigure());
+		}
+		else {
+			removePiece(BOp::bsf(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
+			addPiece(move.GetFinalPosition() + 1, FIGURE::ROOK, move.GetSideFigure());
+		}
+		
 		break;
 
 	case Type_Move::LongCastling:
-		removePiece(BOp::bsf(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
-		addPiece(move.GetFinalPosition() + 1, FIGURE::ROOK, move.GetSideFigure());
+		if (yourColor == SIDE::BLACK) {
+			removePiece(BOp::bsr(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
+			addPiece(move.GetFinalPosition() - 1, FIGURE::ROOK, move.GetSideFigure());
+		}
+		else {
+			removePiece(BOp::bsf(pieces.getBitboard(move.GetSideFigure(), FIGURE::ROOK)), FIGURE::ROOK, move.GetSideFigure());
+			addPiece(move.GetFinalPosition() + 1, FIGURE::ROOK, move.GetSideFigure());
+		}
 		break;
 
 	case Type_Move::Transformation_Pawn:
@@ -86,20 +102,20 @@ void Position::move(Move move) {
 		repetition.clear();
 	}
 	repetition.addHash(hash);
-
+	ListAllMove.push_back(move);
 }
 
 void Position::addPiece(int pos, int figure, uint8_t side) {
 	if (!BOp::getBit(pieces.getBitboard(side, figure), pos)) {
 		pieces.setBitboard(side, figure, BOp::addBit(pieces.getBitboard(side, figure), pos));
-		hash.zobrist(pos, figure, side);
+		hash.zobrist(side, figure, pos);
 	}
 }
 
 void Position::removePiece(int pos, int figure, uint8_t side) {
 	if (BOp::getBit(pieces.getBitboard(side, figure), pos)) {
 		pieces.setBitboard(side, figure, BOp::removeBit(pieces.getBitboard(side, figure), pos));
-		hash.zobrist(pos, figure, side);
+		hash.zobrist(side, figure, pos);
 	}
 }
 

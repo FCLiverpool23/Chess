@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\AI\StaticEvaluation.cpp" />
     <ClCompile Include="src\LegalMove.cpp" />
     <ClCompile Include="src\Masks.cpp" />
     <ClCompile Include="src\Move.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="UI\UI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AI\StaticEvaluation.hpp" />
     <ClInclude Include="src\Bitboard.hpp" />
     <ClInclude Include="src\LegalMove.hpp" />
     <ClInclude Include="src\Masks.hpp" />
