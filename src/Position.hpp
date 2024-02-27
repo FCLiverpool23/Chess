@@ -39,6 +39,7 @@ public:
 	bool getBSCastling() { return bSCastling; }
 
 	float getCountMove() { return countMove; }
+
 	std::vector<Move> getListAllMove() { return ListAllMove; }
 	
 	uint8_t getYourColor() { return yourColor; }

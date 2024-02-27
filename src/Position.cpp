@@ -4,7 +4,7 @@ Position::Position() = default;
 
 Position::Position(uint8_t yourColor, int enPassant, bool wLCastling, bool wSCastling, bool bLCastling, bool bSCastling, float countMove) {
 	
-	if(yourColor == SIDE::WHITE) this->pieces = { "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR" };
+	if (yourColor == SIDE::WHITE) this->pieces = { "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR" };
 	else this->pieces = { "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr" };
 	this->yourColor = yourColor;
 	this->hash = { pieces, wLCastling, wSCastling, bLCastling, bSCastling };

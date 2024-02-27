@@ -22,6 +22,13 @@ UI::UI() {
 
 	Storage::getPtr()->addFont("2409-font.ttf");
 	Storage::getPtr()->addCross("sprites/RedCross.png");
+<<<<<<< HEAD
+=======
+
+	
+
+	this->position = { SIDE::WHITE, Move::NONE, true, true, true, true, 1 };
+>>>>>>> 67409e8dde24e0eae7ae7faaab30ba3fc896fe49
 
 	this->position = { SIDE::WHITE, Move::NONE, true, true, true, true, 1 };
 
@@ -47,13 +54,14 @@ void UI::start() {
 							&& mouse.y < (int)(getPositionCell(x, y).y + SizeCell) && (result != Move::NONE || SelectedCell != sf::Vector2i(INT_MAX, INT_MAX))) cell = sf::Vector2i(x, y);
 					}
 				}
-
 				
 				if (SelectedCell == sf::Vector2i(INT_MAX, INT_MAX)) {
 					if (fabs((int)position.getCountMove() - position.getCountMove()) > 1e-7f && BOp::getBit(position.getPieces().getSideBitboard(SIDE::WHITE), cell.y * 8 + cell.x)) continue;
 					if (fabs((int)position.getCountMove() - position.getCountMove()) <= 1e-7f && BOp::getBit(position.getPieces().getSideBitboard(SIDE::BLACK), cell.y * 8 + cell.x)) continue;
 					SelectedCell = cell;
 				}
+
+				if (SelectedCell == sf::Vector2i(INT_MAX, INT_MAX)) SelectedCell = cell;
 				else {
 
 					for (int i = 0; i < actualMoves.size(); i++) {
